@@ -1,6 +1,5 @@
 #encoding: utf-8
 import sys #para operaciones sobre el sistema
-from inspect import getargspec #para reflexión: http://docs.python.org/library/inspect.html
 
 
 def search(linea, criterio):
