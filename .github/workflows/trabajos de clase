@@ -1,0 +1,69 @@
+#esta es una clase
+class MiClase: #para heredar, podríamos usar MiClase(object) , heredamos de object
+    #
+    #este es el constructor
+    #TODOS los métodos de una función reciben "self" como primer parámetro
+    #podemos ponerle nombre y valores por defecto
+    def __init__(self, primero, apellido, segundo="ninguno"):
+
+        self.primero = primero
+        self.apellido = apellido
+        self.segundo = segundo
+
+    def full_name(self):
+        #aquí usamos formato de strings y una tupla
+        return "%s %s %s" % (self.primero, self.segundo, self.apellido)
+    def __string__(self):
+	return full_name()
+
+#ejemplos de instanciación
+p = MiClase(apellido = "Clarke", primero="Arthur")
+q = MiClase("Arthur", "Clarke", "C")
+d = {"apellido": "borjas", "segundo": "felipe", "primero": "luis"}
+l = ["Arthur", "Clarke", "C."]
+#aquí "desempacamos" una lista para mandar sus elementos como parámetros
+t = MiClase(*l)
+#y acá, desempacamos un diccionario
+x = MiClase(**d)
+
+#acá usamos el toString 
+print p, q, t, x
+
+#usamos "list comprehensions" y "array slicing"
+ar = [i for i in range(n)[::3]]
+
+
+#esto sirve para iterar en un rango
+for i in range(10,20):
+    print i
+
+#esta función recibe OTRA función y un arreglo, y 
+#devuelve otro arreglo con la función aplicada a cada 
+#elemento del original
+def mapcar(aplicador, arreglo):
+    #aquí usamos "list comprehensions"
+    return [aplicador(e) for e in arreglo]
+
+#este código se ejecutará
+print "probando `mapcar`"
+#usamos la notación lambda para definir una función anónima
+print mapcar(lambda x: x*x*x, [1,2,3,4])
+
+def square(x):
+    return x*x
+
+#aquí mandamos a la funcion `square` como parámetro
+print mapcar(square, [1,2,3,4])
+
+#aquí "desempacamos" una lista de parámetros
+def aplicar(f, *args):
+    return f(*args)
+
+def sum(a,b):
+   return a+b
+
+print aplicar(sum, 1,2)
+
+#interacción con el usuario
+n = raw_input("escribi pue>")
+print "vos escribiste %s" % n
