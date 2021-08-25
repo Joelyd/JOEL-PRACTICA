@@ -1,0 +1,168 @@
+#encoding: utf-8
+import sys #para operaciones sobre el sistema
+from inspect import getargspec #para reflexión: http://docs.python.org/library/inspect.html
+
+
+def search(linea, criterio):
+    if criterio in linea:
+        #aquí usamos formato con nombres, es más explícito que el formato que ya conocíamos
+        print "Encontrado '%(criterio)s' en '%(linea)s'" % {'criterio': criterio, 'linea': linea.strip()}
+    return linea
+
+def replace(linea, original, reemplazo):
+    if original in linea:
+        print "reemplazando %s por %s en %s" % (original, reemplazo, linea)
+        return linea.replace(original, reemplazo)
+    return linea
+
+def copy(linea):
+    return linea
+
+#construimos un diccionario con las operaciones posibles
+operaciones = {'copiar': copy,
+               'reemplazar': replace,
+               'buscar': search,
+              }
+
+def operar_en_archivo(nombre_de_archivo, operacion="copiar", *args):
+    archivo = open(nombre_de_archivo)
+    salida  = open("copy_"+nombre_de_archivo, 'w') #lo abrimos en modo write (escritura)
+    for linea in archivo:
+        #aplicamos la operacion
+        if operacion in operaciones:
+            salida.write(operaciones[operacion](linea, *args))
+        else:
+            salida.write(linea)
+def usage(script, operation, params):
+    print "python %s archivo %s %s" % (script, operation, " ".join([e for e in params if e != "linea"]))
+
+#esta técnica se usa para sólo correr el módulo cuando se ejecuta directamente, en lugar de hacerlo siempre
+if __name__ == "__main__":
+    #argv es la lista de argumentos que el módulo recibe: http://docs.python.org/library/sys.html
+    #argv[0] es el nombre de este script
+    #a diferencia de java, argv ya es algo fijo, no arbitrario
+    print "bienvenido al operador de archivos %s" %sys.argv[0]
+    if len(sys.argv) > 2:
+        print "elegiste ejecutar la operación %s" % sys.argv[2] 
+        operar_en_archivo(sys.argv[1], *sys.argv[2:]) 
+    else:
+        print "Uso:\n\t%s archivo [parámetros]" % sys.argv[0]
+        print "por ejemplo:"
+        for key,value in operaciones.items():
+            usage(sys.argv[0], key, getargspec(value)[0])
+
+        
+
+    
+miclase.py
+#encoding=utf-8
+#esta es una clase
+class MiClase: #para heredar, podríamos usar MiClase(object) , heredamos de object
+    #
+    #este es el constructor
+    #TODOS los métodos de una función reciben "self" como primer parámetro
+    #podemos ponerle nombre y valores por defecto
+    def __init__(self, primero, apellido, segundo="ninguno"):
+
+        self.primero = primero
+        self.apellido = apellido
+        self.segundo = segundo
+
+    def full_name(self):
+        #aquí usamos formato de strings y una tupla
+        return "%s %s %s" % (self.primero, self.segundo, self.apellido)
+
+    #así se define un tostring
+    def __str__(self):
+	    return self.full_name()
+        
+
+#ejemplos de instanciación
+#acá usamos parámetros con nombre
+p = MiClase(apellido = "Clarke", primero="Arthur")
+#acá, parámetros posicionales normales
+q = MiClase("Arthur", "Clarke", "C")
+
+#un diccionario
+d = {"apellido": "borjas", "segundo": "felipe", "primero": "luis"}
+#una lista
+l = ["Arthur", "Clarke", "C."]
+#aquí "desempacamos" una lista para mandar sus elementos como parámetros
+t = MiClase(*l) #equivale a MiClase('Arthur', 'Clarke', 'C.')
+#y acá, desempacamos un diccionario
+x = MiClase(**d) #equivale a MiClase(apellido="borjas", segundo="felipe", primero="luis")
+
+print "===PROBANDO INSTANCIAR====="
+#acá usamos el toString 
+print p, q, t, x
+
+print "====PROBANDO RANGOS ====="
+#esto sirve para iterar en un rango
+for i in range(10):
+    print i
+
+#o esto
+for j in range(10, 20):
+    print j
+
+print "=== PROBANDO SLICING====="
+
+#y si quisiéramos ir de dos en dos?
+for i in range(10,20)[::2]:
+    print i
+
+n = 50
+#usamos "list comprehensions" y "array slicing": vamos desde el principio hasta el final
+#de tres en tres
+
+ar = [i for i in range(n)[::3]] #array slicing: [inicio:fin:step]
+
+print "de tres en tres", ar
+#vamos desde el segundo hasta la mitad
+w = range(n)
+print "del segundo a la mitad", [i for i in w[1:len(w)/2] ]
+#y si quisiéramos imprimir los números que son múltiplos de 3 o de 5?
+print "múltiplos de tres o cinco"
+print [i for i in w if (i % 3 == 0) or (i % 5 == 0)]
+#que equivale a esto:
+print [i for i in w if not (i % 3) or not(i % 5)] #porque 0 tiene un valor falso de verdad
+
+
+#esta función recibe OTRA función y un arreglo, y 
+#devuelve otro arreglo con la función aplicada a cada 
+#elemento del original
+def mapcar(aplicador, arreglo):
+    #aquí usamos "list comprehensions"
+    return [aplicador(e) for e in arreglo]
+
+#este código se ejecutará
+print "probando `mapcar`"
+#usamos la notación lambda para definir una función anónima
+print mapcar(lambda x: x*x*x, [1,2,3,4])
+
+def square(x):
+    return x*x
+
+#aquí mandamos a la funcion `square` como parámetro
+print mapcar(square, [1,2,3,4])
+
+#aquí "desempacamos" una lista de parámetros
+def aplicar(f, *args):
+    return f(*args)
+
+def bubblesort(ar):
+    for i in range(len(ar)):
+        for j in range(1, len(ar) - i ):
+            if ar[j-1] > ar[j]:
+                ar[j-1], ar[j] = ar[j], ar[j-1]
+    return ar
+
+def sum(a,b):
+   return a+b
+
+print aplicar(sum, 1,2)
+print aplicar(bubblesort, [4,3,2,1,0]) #equivale a bubblesort([4,3,2,1,0])
+
+#interacción con el usuario
+n = raw_input("escribi pue>")
+print "vos escribiste %s" % n
